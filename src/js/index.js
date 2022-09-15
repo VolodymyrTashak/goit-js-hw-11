@@ -6,12 +6,17 @@ import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 
 const refs = getRefs();
+// const refs = {
+//   form: document.querySelector('.search-form'),
+//   gallery: document.querySelector('.gallery'),
+//   loadMoreBtn: document.querySelector('.load-more'),
+// };
 const newsApiService = new NewsApiService();
 
 refs.form.addEventListener('submit', onSearch);
 refs.loadMoreBtn.addEventListener('click', onLoadMore);
 
-function onSearch(e) {
+async function onSearch(e) {
   e.preventDefault();
 
   newsApiService.query = e.currentTarget.elements.searchQuery.value.trim();
@@ -20,19 +25,19 @@ function onSearch(e) {
   }
   newsApiService.resetPage();
 
-  newsApiService.fetchArticles().then(res => {
-    if (res.data.hits.length === 0) {
+  await newsApiService.fetchArticles().then(res => {
+    if (res.hits.length === 0) {
       return Notify.failure(
         'Sorry, there are no images matching your search query. Please try again.'
       );
     }
     clearGallery();
-    Notify.success(`Hooray! We found ${res.data.totalHits} images.`);
-    renderGallery(res.data.hits);
+    Notify.success(`Hooray! We found ${res.totalHits} images.`);
+    renderGallery(res.hits);
     if (newsApiService.page > 2) {
       scroll();
     }
-    if (res.data.totalHits <= 40) {
+    if (res.totalHits <= 40) {
       return Notify.failure(
         "We're sorry, but you've reached the end of search results."
       );
@@ -42,8 +47,8 @@ function onSearch(e) {
   });
 }
 
-function onLoadMore(e) {
-  newsApiService.fetchArticles().then(data => {
+async function onLoadMore(e) {
+  await newsApiService.fetchArticles().then(data => {
     renderGallery(data.hits);
     if (data.hits / newsApiService.page < 40) {
       refs.loadMoreBtn.classList.add('is-hidden');
@@ -90,9 +95,9 @@ function renderGallery(data) {
     </div>`
     )
     .join('');
-  refs.gallery.insertAdjacentHTML(`beforebegin`, render);
-  let lightbox = new SimpleLightbox('.gallery a');
-  lightbox.refresh();
+  refs.gallery.insertAdjacentHTML(`beforeend`, render);
+  let gallery = new SimpleLightbox('.gallery a');
+  gallery.refresh();
 }
 
 function scroll() {

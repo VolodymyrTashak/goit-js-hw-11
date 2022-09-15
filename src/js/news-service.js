@@ -1,11 +1,9 @@
 import axios from 'axios';
-
 export class NewsApiService {
   constructor() {
     this.searchQuery = '';
     this.page = 1;
   }
-
   async fetchArticles() {
     const BASE_URL = 'https://pixabay.com/api/';
     const KEY = 'key=29860210-f6d08db11b6c43066ac2ccb28';
@@ -17,7 +15,6 @@ export class NewsApiService {
     //   per_page: 40,
     //   page: `${this.page}`,
     // };
-
     try {
       const response = await axios
         .get(
@@ -26,8 +23,7 @@ export class NewsApiService {
         .then(res => {
           this.incrementPage();
           return res.data;
-        })
-        .then(console.log);
+        });
       return response;
     } catch (error) {
       console.log(error);
