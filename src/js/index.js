@@ -11,7 +11,7 @@ const newsApiService = new NewsApiService();
 refs.form.addEventListener('submit', onSearch);
 refs.loadMoreBtn.addEventListener('click', onLoadMore);
 
-async function onSearch(e) {
+function onSearch(e) {
   e.preventDefault();
 
   newsApiService.query = e.currentTarget.elements.searchQuery.value.trim();
@@ -20,16 +20,19 @@ async function onSearch(e) {
   }
   newsApiService.resetPage();
 
-  await newsApiService.fetchArticles().then(res => {
-    if (res.hits.length === 0) {
-      Notify.failure(
+  newsApiService.fetchArticles().then(res => {
+    if (res.data.hits.length === 0) {
+      return Notify.failure(
         'Sorry, there are no images matching your search query. Please try again.'
       );
     }
     clearGallery();
-    Notify.success(`Hooray! We found ${res.totalHits} images.`);
-    renderGallery(res.hits);
-    if (res.totalHits <= 40) {
+    Notify.success(`Hooray! We found ${res.data.totalHits} images.`);
+    renderGallery(res.data.hits);
+    if (newsApiService.page > 2) {
+      scroll();
+    }
+    if (res.data.totalHits <= 40) {
       return Notify.failure(
         "We're sorry, but you've reached the end of search results."
       );
@@ -39,9 +42,15 @@ async function onSearch(e) {
   });
 }
 
-async function onLoadMore(e) {
-  await newsApiService.fetchArticles().then(res => {
-    renderGallery(res.hits);
+function onLoadMore(e) {
+  newsApiService.fetchArticles().then(data => {
+    renderGallery(data.hits);
+    if (data.hits / newsApiService.page < 40) {
+      refs.loadMoreBtn.classList.add('is-hidden');
+      return Notify.failure(
+        "We're sorry, but you've reached the end of search results."
+      );
+    }
   });
 }
 
@@ -84,4 +93,15 @@ function renderGallery(data) {
   refs.gallery.insertAdjacentHTML(`beforebegin`, render);
   let lightbox = new SimpleLightbox('.gallery a');
   lightbox.refresh();
+}
+
+function scroll() {
+  const { height: cardHeight } = document
+    .querySelector('.gallery')
+    .firstElementChild.getBoundingClientRect();
+
+  window.scrollBy({
+    top: cardHeight * 2,
+    behavior: 'smooth',
+  });
 }
