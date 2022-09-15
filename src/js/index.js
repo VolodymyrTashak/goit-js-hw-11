@@ -6,11 +6,6 @@ import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 
 const refs = getRefs();
-// const refs = {
-//   form: document.querySelector('.search-form'),
-//   gallery: document.querySelector('.gallery'),
-//   loadMoreBtn: document.querySelector('.load-more'),
-// };
 const newsApiService = new NewsApiService();
 
 refs.form.addEventListener('submit', onSearch);
