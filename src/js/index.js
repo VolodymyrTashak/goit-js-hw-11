@@ -15,43 +15,52 @@ async function onSearch(e) {
   e.preventDefault();
 
   newsApiService.query = e.currentTarget.elements.searchQuery.value.trim();
-  if (newsApiService.query === '') {
-    return Notify.failure('Please write what to look for');
-  }
-  newsApiService.resetPage();
+  try {
+    if (newsApiService.query === '') {
+      return Notify.failure('Please write what to look for');
+    }
+    newsApiService.resetPage();
 
-  await newsApiService.fetchArticles().then(res => {
-    if (res.hits.length === 0) {
-      return Notify.failure(
-        'Sorry, there are no images matching your search query. Please try again.'
-      );
-    }
-    clearGallery();
-    Notify.success(`Hooray! We found ${res.totalHits} images.`);
-    renderGallery(res.hits);
-    if (newsApiService.page > 2) {
-      scroll();
-    }
-    if (res.totalHits <= 40) {
-      return Notify.failure(
-        "We're sorry, but you've reached the end of search results."
-      );
-    } else {
-      refs.loadMoreBtn.classList.remove('is-hidden');
-    }
-  });
+    await newsApiService.fetchArticles().then(res => {
+      if (res.hits.length === 0) {
+        return Notify.failure(
+          'Sorry, there are no images matching your search query. Please try again.'
+        );
+      }
+      clearGallery();
+      Notify.success(`Hooray! We found ${res.totalHits} images.`);
+      renderGallery(res.hits);
+      if (newsApiService.page > 2) {
+        scroll();
+      }
+      if (res.totalHits <= 40) {
+        return Notify.failure(
+          "We're sorry, but you've reached the end of search results."
+        );
+        refs.loadMoreBtn.classList.remove('is-hidden');
+      } else {
+        refs.loadMoreBtn.classList.remove('is-hidden');
+      }
+    });
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 async function onLoadMore(e) {
-  await newsApiService.fetchArticles().then(data => {
-    renderGallery(data.hits);
-    if (data.hits / newsApiService.page < 40) {
-      refs.loadMoreBtn.classList.add('is-hidden');
-      return Notify.failure(
-        "We're sorry, but you've reached the end of search results."
-      );
-    }
-  });
+  try {
+    await newsApiService.fetchArticles().then(data => {
+      renderGallery(data.hits);
+      if (data.hits / newsApiService.page < 40) {
+        refs.loadMoreBtn.classList.add('is-hidden');
+        return Notify.failure(
+          "We're sorry, but you've reached the end of search results."
+        );
+      }
+    });
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 function clearGallery() {
