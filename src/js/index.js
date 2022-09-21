@@ -39,9 +39,11 @@ async function onSearch(e) {
       return Notify.failure(
         "We're sorry, but you've reached the end of search results."
       );
+      refs.loadMoreBtn.classList.remove('load-more');
       refs.loadMoreBtn.classList.add('is-hidden');
     } else {
       refs.loadMoreBtn.classList.remove('is-hidden');
+      refs.loadMoreBtn.classList.add('load-more');
     }
   } catch (error) {
     console.log(error);
