@@ -26,7 +26,9 @@ async function onSearch(e) {
       return Notify.failure(
         'Sorry, there are no images matching your search query. Please try again.'
       );
+      refs.loadMoreBtn.classList.add('is-hidden');
     }
+    refs.form.reset();
     clearGallery();
     Notify.success(`Hooray! We found ${res.totalHits} images.`);
     renderGallery(res.hits);
@@ -37,6 +39,7 @@ async function onSearch(e) {
       return Notify.failure(
         "We're sorry, but you've reached the end of search results."
       );
+      refs.loadMoreBtn.classList.add('is-hidden');
     } else {
       refs.loadMoreBtn.classList.remove('is-hidden');
     }
