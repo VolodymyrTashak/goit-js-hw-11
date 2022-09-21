@@ -48,8 +48,8 @@ async function onSearch(e) {
 async function onLoadMore(e) {
   try {
     const res = await newsApiService.fetchArticles();
-    renderGallery(data.hits);
-    if (data.hits / newsApiService.page < 40) {
+    renderGallery(res.hits);
+    if (res.hits / newsApiService.page < 40) {
       refs.loadMoreBtn.classList.add('is-hidden');
       return Notify.failure(
         "We're sorry, but you've reached the end of search results."
