@@ -20,10 +20,6 @@ export class NewsApiService {
         `${BASE_URL}?${KEY}&q=${this.searchQuery}&image_type=photo&orientation=horizontal&safesearch=true&per_page=40&page=${this.page}`
       );
       this.incrementPage();
-      // .then(res => {
-      //   this.incrementPage();
-      //   return res.data;
-      // });
       return response.data;
     } catch (error) {
       console.log(error);
@@ -42,5 +38,9 @@ export class NewsApiService {
   }
   set query(newQuery) {
     this.searchQuery = newQuery;
+  }
+
+  get pageNumber() {
+    return this.page;
   }
 }

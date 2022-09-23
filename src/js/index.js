@@ -26,7 +26,6 @@ async function onSearch(e) {
       return Notify.failure(
         'Sorry, there are no images matching your search query. Please try again.'
       );
-      // refs.loadMoreBtn.classList.add('is-hidden');
     }
     refs.form.reset();
     clearGallery();
@@ -51,13 +50,14 @@ async function onSearch(e) {
 async function onLoadMore() {
   try {
     const res = await newsApiService.fetchArticles();
-    renderGallery(res.hits);
-    if (res.hits.length < 40) {
+
+    if (res.totalHits - 40 * (newsApiService.page - 1) <= 0) {
       refs.loadMoreBtn.classList.add('is-hidden');
       return Notify.failure(
         "We're sorry, but you've reached the end of search results."
       );
     }
+    renderGallery(res.hits);
   } catch (error) {
     console.log(error);
   }
